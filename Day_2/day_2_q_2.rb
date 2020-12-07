@@ -1,10 +1,8 @@
 # Check the list of passwords combined with their policy, and count how many are valid
-# Valid passwords are ones where the given character appears between the min and max number of times given
+# Valid passwords are ones where the given character appears in one of the two positions given
 
-def check_password(check_char, min_count, max_count, password)
-  char_count = password.scan(check_char).length
-  # puts char_count.between?(min_count, max_count)
-  char_count.between?(min_count, max_count)
+def check_password(check_char, pos_1, pos_2, password)
+  (password.chars[pos_1 -1] == check_char) ^ (password.chars[pos_2 -1] == check_char) 
 end
 
 input_file = "./day_2_input"
@@ -19,11 +17,11 @@ invalid_count = 0
 split_list.each do |l|
   check_arr = l.split(/[\-\: ]/).reject(&:empty?)
   # puts check_arr
-  min_count = check_arr[0].to_i
-  max_count = check_arr[1].to_i
+  pos_1 = check_arr[0].to_i
+  pos_2 = check_arr[1].to_i
   check_char = check_arr[2]
   password = check_arr[3]
-  check_password(check_char, min_count, max_count, password) ? valid_count += 1 : invalid_count += 1
+  check_password(check_char, pos_1, pos_2, password) ? valid_count += 1 : invalid_count += 1
   total_check_count += 1
 end
 
