@@ -20,30 +20,36 @@ def data_validation(field, value)
   pid_length, pid_regex = 9, /[0-9]{9}/
   case field
   when "byr"
-     value.between(byr_min, byr_max)
+     return value.to_i.between?(byr_min, byr_max)
   when "iyr"
-     value.between(iyr_min, iyr_max)
+     return value.to_i.between?(iyr_min, iyr_max)
   when "eyr"
-     value.between(eyr_min, eyr_max)
+     value.to_i.between?(eyr_min, eyr_max)
   when "hgt"
-     value.between(hgt_min, hgt_max)
+     if value[-2..-1] == "cm"
+       return value[0..2].to_i.between?(hgt_min_cm, hgt_max_cm)
+     elsif value[-2..-1] == "in"
+       return value[0..1].to_i.between?(hgt_min_in, hgt_max_in)
+     end
   when "hcl"
-     value.length == hcl_length && value.match?(hcl_regex)
+    return value.length == hcl_length && value.match?(hcl_regex)
   when "ecl"
-    ecl_arr.include?(value)
+    return ecl_arr.include?(value)
   when "pid"
-    value.length = pid_length && value.match(pid_regex)
+    return value.length == pid_length && value.match(pid_regex)
   end
 end
 
-# In this method we first check that all the compulsary fields appear
-# and then we check that the data within them is valid
+# In this method we check each compulsary field, first that it appears
+# and then we check that the data in it is valid
 def passport_check(passport)
   compulsary_fields = ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"]
   compulsary_fields.each do |field|
     return false if !passport.include?(field + ":")
-    # Extract the value from the passport string and pass this and the
+    value = passport.partition(field + ":").last.partition(/[ \n]/).first
+    return false if !data_validation(field, value)
   end
+  true
 end
 
 # Set the parameters for this particular question
@@ -60,6 +66,7 @@ passport_array.each do |passport|
   passport_check(passport) ? valid_count += 1 : invalid_count += 1
   total_count += 1
 end
+
 
 # Output the result to the screen
 
