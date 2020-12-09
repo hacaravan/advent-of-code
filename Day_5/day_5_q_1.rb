@@ -18,14 +18,6 @@ input_file = "./day_5_input"
 
 binary_seat_numbers = File.read(input_file).split(/\n/).map{|string| string.gsub(/[FBLR]/,binary_symbol_hash)}
 
-# Don't need the below for the purposes of this exercise
-# integer_row_numbers = binary_seat_numbers.map{|binary_string| row_from_binary(binary_string)}
-# integer_col_numbers = binary_seat_numbers.map{|binary_string| col_from_binary(binary_string)}
 unique_seat_ids = binary_seat_numbers.map{|binary_string| row_from_binary(binary_string) * 8 + col_from_binary(binary_string)}
 
 puts unique_seat_ids.max
-
-## Test conditions
-# puts row_from_binary("FFFBBBFRRR".gsub(/[FBLR]/,binary_symbol_hash))
-# puts col_from_binary("FFFBBBFRRR".gsub(/[FBLR]/,binary_symbol_hash))
-# puts row_from_binary("FFFBBBFRRR".gsub(/[FBLR]/,binary_symbol_hash)) * 8 + col_from_binary("FFFBBBFRRR".gsub(/[FBLR]/,binary_symbol_hash))
