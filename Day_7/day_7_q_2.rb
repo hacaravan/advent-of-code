@@ -45,11 +45,11 @@ order = 0
 # those bags in the layer above appear
 # This process iterates layer by layer until you have a layer which has no bags within it
 while true do
-  current_containers = bag_ordered_containment[order]
+  current_containers = bag_ordered_containment[order] # <= hash
   break if current_containers.empty?
   next_order_bags = Hash.new(0)
-  current_containers.each do |container_bag, container_count|
-    contained_bags = bag_container_hash[container_bag]
+  current_containers.each do |container_bag, container_count| # loop through the bags from the layer above
+    contained_bags = bag_container_hash[container_bag] # hash taken from
     contained_bags.each do |contained_bag, contained_count|
       next_order_bags[contained_bag] += container_count * contained_count
     end
@@ -59,6 +59,8 @@ while true do
 end
 
 total_bags_in_check_bag = bag_ordered_containment.map {|hash| hash.values.reduce(0, :+)}.reduce(0, :+)
+
+bag_ordered_containment.each { |layer_hash| p "#{layer_hash}"}
 
 puts "There are #{total_bags_in_check_bag} bags within #{check_bag} bag"
 
