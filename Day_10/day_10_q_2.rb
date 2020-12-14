@@ -1,21 +1,39 @@
 # Take the list of 'joltages' representing adapters, and, by using each 'adapter',
-# count how many 'jumps' of either 1,2, or 3 are made (3 is the max step up that can be made)
-# In this exercise we need to count how many
+# We still have the condition that we can jump up by 1, 2, or 3 volts, but now we
+# have to count how many valid arrangements are (we don't have to use all the adapters)
 
 input_file = "./day_10_input"
 
 sorted_numbers = File.read(input_file).split("\n").map(&:to_i).sort
 
-jolt_differences = {1 => 0, 2 => 0, 3 => 0}
+# Add the 0 valued wall socket to the start, and the device whose value is 3 higher
+# than the max of the adapters to the end of the sorted array
 
-# Have to add the smallest number on, as there is a difference to the outlet, which has value of 0
-# This minimum number will be one of 1, 2 or 3 (in fact, in our input file, it's 1)
-# Also, there is a 3-jolt higher adapter than the max joltage adapter available, so the 3-gaps starts on 1
-jolt_differences[sorted_numbers.min] += 1
-jolt_differences[3] += 1
+sorted_numbers.unshift(0)
+sorted_numbers << sorted_numbers.max + 3
 
-# Then for each consecutive pair, add on the difference
-sorted_numbers.each_cons(2) { |pair| jolt_differences[pair.last - pair.first] += 1}
+number_precedents = Hash.new
 
-puts "The final tally of how many of each difference is #{jolt_differences}"
-puts "The count of 1-differences multiplied by 3-differences is #{jolt_differences[1] * jolt_differences [3]}"
+# For each number in our list, work out which numbers can immediately precede it
+# This will inform how many ways we can get to the final number
+sorted_numbers.each do |number|
+  number_precedents[number] = sorted_numbers.select {|precedent| precedent < number && precedent >= number - 3}
+end
+
+precedent_path_counts = Hash.new(0)
+
+sorted_numbers.each do |number|
+  if number == 0
+    precedent_path_counts[number] = 1
+    next
+  end
+  number_precedents[number].each {|precedent| precedent_path_counts[number] += precedent_path_counts[precedent]}
+end
+
+puts precedent_path_counts[sorted_numbers.last]
+
+# Now we have to work out how many ways we can get from 0 to the max value in steps of 1, 2, or 3
+# sorted_numbers.each_cons(2) { |pair| jolt_differences[pair.last - pair.first] += 1}
+#
+# # puts "The final tally of how many of each difference is #{jolt_differences}"
+# # puts "The count of 1-differences multiplied by 3-differences is #{jolt_differences[1] * jolt_differences [3]}"
