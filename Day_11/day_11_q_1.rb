@@ -15,17 +15,6 @@ input_file = "./day_11_input"
 # We also get the number of rows and columns (1-based)
 position_array = File.read(input_file).split("\n").map(&:chars)
 
-position_array = "L.LL.LL.LL
-LLLLLLL.LL
-L.L.L..L..
-LLLL.LL.LL
-L.LL.LL.LL
-L.LLLLL.LL
-..L.L.....
-LLLLLLLLLL
-L.LLLLLL.L
-L.LLLLL.LL".split("\n").map(&:chars)
-
 def check_adjacent_chairs(arr, row, col)
   total_rows = arr.length
   total_cols = arr[row].length
@@ -65,7 +54,6 @@ end
 iteration_count = 0
 
 while true do
-  puts position_array.is_a?(Array)
   new_arr = iterate_seating_rules(position_array)
   break if new_arr == position_array
   position_array = new_arr
