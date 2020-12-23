@@ -19,20 +19,31 @@ bus_nums = "7,13,x,x,59,x,31,19".split(",")
 # Creates a hash, where the keys are the non-empty bus ID's and the values are the
 # index of these in the input, which is equivalent to what the remainder should be when
 # dividing each subsequent test number by the bus id
-rules_hash = {}
-bus_nums.each_with_index { |num, ind| rules_hash[num.to_i] = (num.to_i - ind) % num.to_i if num != "x" }
 
-interval = rules_hash.keys.max
-cand_num = rules_hash[interval]
-full_match = false
+bus_num_rules = bus_nums.each_with_index.map { |num, ind| [num.to_i, ind] if num != "x" }.reject(&:nil?)
 
 
-until full_match do
-  full_match = rules_hash.keys.reduce(true) { |match_all, divisor| match_all && check_remainder_match(cand_num, divisor, rules_hash[divisor])}
-  cand_num += interval
+# We are using modular division/remainders to get the solution, as this is a reframing of it.
+# Effectively, each key in our hash, ie the bus IDs, represents a divisor, while the index
+# of where that ID appears in the input list is a target remainder. So we have to find a
+# number which, given a list of divisors, matches the associated remainders for each divisor.
+# Starting from the remainder needed for the first bus ID, we jump by multiples of the first divisor
+# until we get to a number which, when divided by the second divisor, gives the second target remainder.
+# But now we are matching two remainders with two divisors, and searching for a number
+# that matches a third divisor/remainder pair, but still must match the first two rules,
+# so we have to search by multiples of both the first and second divisors. Technically,
+# we must jump by the LCD of these two numbers, so I will build this
+
+interval, cand_num = bus_num_rules.first
+
+bus_num_rules[1..-1].each do |bus_arr|
+  new_divisor, new_remainder = bus_arr
+  until (cand_num + new_remainder) % new_divisor == 0  do
+    cand_num += interval
+  end
+  # puts "candidate number - #{cand_num}, interval - #{interval}, divisor - #{new_divisor}, remainder - #{new_remainder}"
+  interval = interval.lcm(new_divisor)
 end
-
-# p full_match
 
 puts "The number #{cand_num} is the minimum number which is offset from each bus by the allocated amount"
 
