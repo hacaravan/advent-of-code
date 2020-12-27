@@ -19,14 +19,15 @@ def change_mask(new_mask)
   @mask = new_mask
 end
 
+def update_memory_hash(location, value)
+  @memory_hash[location] = apply_bitmask(value, @mask)
+end
+
 def read_instruction(line)
   line_arr = line.split(/[\s\[\]=]/).reject(&:empty?)
   instruction = line_arr.first
-  if instruction == "mask" then change_mask(line_arr.last)
-  elsif instruction == "mem"
-    location, value = line_arr[1,2].map(&:to_i)
-    @memory_hash[location] = apply_bitmask(value, @mask)
-  end
+  change_mask(line_arr.last) if instruction == "mask"
+  update_memory_hash(line_arr[1].to_i, line_arr[2].to_i) if instruction == "mem"
 end
 
 @mask, @memory_hash = "", {}
