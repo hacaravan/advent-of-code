@@ -10,6 +10,7 @@
 # and the & puts 0s where there are 0s in the bitmask. Since 'do nothing' is represented
 # by an x in the bitmask, we have to sub this out for the equivalent 'do nothing'
 # bit for each operation - 0 | a = a for all a, 1 & b = b for all b
+
 def apply_bitmask(original_num, bitmask)
   original_num = original_num | bitmask.gsub("X", "0").to_i(2)
   original_num & bitmask.gsub("X", "1").to_i(2)
@@ -34,10 +35,8 @@ end
 
 input_file = "./day_14_input"
 
-"mask = XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X
-mem[8] = 11
-mem[7] = 101
-mem[8] = 0".each_line { |line| read_instruction(line) }
+File.read(input_file).each_line { |line| read_instruction(line) }
 
-puts "mask = #{@mask}
-memory_hash = #{@memory_hash}"
+value_sum = @memory_hash.values.reduce(0, :+)
+
+puts "The sum of all stored values is #{value_sum}, or in binary #{value_sum.to_s(2)}"
