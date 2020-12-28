@@ -14,22 +14,35 @@
 # by an x in the bitmask, we have to sub this out for the equivalent 'do nothing'
 # bit for each operation - 0 | a = a for all a, 1 & b = b for all b
 
-def apply_bitmask(original_num, bitmask)
-  original_num = original_num | bitmask.gsub("X", "0").to_i(2)
-  original_num & bitmask.gsub("X", "1").to_i(2)
+def apply_bitmask(original_num)
+  binary_original = "%036b" % original_num
+  out_arr = [""]
+  @mask.chars.each_with_index do |char, index|
+    out_arr = add_to_all_in_arr(out_arr, "1") if char == "1"
+    out_arr = add_to_all_in_arr(out_arr, binary_original[index]) if char == "0"
+    out_arr = duplicate_and_add(out_arr) if char == "x"
+  end
 end
 
-# Convert the x's to [0,1] arrays within an array of the elements
-def mask_to_arr(mask)
-  mask.chars.map { |char| char == "X" ? [0,1] : char.to_i}
+def add_to_all_in_arr(arr, new_char)
+  arr.map { |str| str + new_char }
 end
+
+def duplicate_and_add(arr)
+  add_to_all_in_arr(arr, "0") + add_to_all_in_arr(arr, "1")
+end
+
+# # Convert the x's to [0,1] arrays within an array of the elements
+# def mask_to_arr(mask)
+#   mask.chars.map { |char| char == "X" ? [0,1] : [char.to_i]}
+# end
 
 def change_mask(new_mask)
   @mask = new_mask
 end
 
 def update_memory_hash(location, value)
-  @memory_hash[location] = apply_bitmask(value, @mask)
+  apply_bitmask(location).each { |new_location| @memory_hash[new_location] = value}
 end
 
 def read_instruction(line)
@@ -41,8 +54,8 @@ end
 
 @mask, @memory_hash = "", {}
 
-p mask_to_arr("000000000000000000000000000000X1001X")
-
+a = ["0", "1"]
+puts duplicate_and_add(a)
 # input_file = "./day_14_input"
 #
 # File.read(input_file).each_line { |line| read_instruction(line) }
