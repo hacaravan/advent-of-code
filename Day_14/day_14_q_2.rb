@@ -16,12 +16,14 @@
 
 def apply_bitmask(original_num)
   binary_original = "%036b" % original_num
+  # p binary_original
   out_arr = [""]
   @mask.chars.each_with_index do |char, index|
     out_arr = add_to_all_in_arr(out_arr, "1") if char == "1"
     out_arr = add_to_all_in_arr(out_arr, binary_original[index]) if char == "0"
-    out_arr = duplicate_and_add(out_arr) if char == "x"
+    out_arr = duplicate_and_add(out_arr) if char == "X"
   end
+  out_arr.map{ |location| location.to_i(2)}
 end
 
 def add_to_all_in_arr(arr, new_char)
@@ -32,13 +34,9 @@ def duplicate_and_add(arr)
   add_to_all_in_arr(arr, "0") + add_to_all_in_arr(arr, "1")
 end
 
-# # Convert the x's to [0,1] arrays within an array of the elements
-# def mask_to_arr(mask)
-#   mask.chars.map { |char| char == "X" ? [0,1] : [char.to_i]}
-# end
-
 def change_mask(new_mask)
   @mask = new_mask
+  puts "Mask is #{@mask}"
 end
 
 def update_memory_hash(location, value)
@@ -52,10 +50,18 @@ def read_instruction(line)
   update_memory_hash(line_arr[1].to_i, line_arr[2].to_i) if instruction == "mem"
 end
 
-@mask, @memory_hash = "", {}
+@mask, @memory_hash = "000000000000000000000000000000X1001X", {}
 
-a = ["0", "1"]
-puts duplicate_and_add(a)
+# p add_to_all_in_arr(duplicate_and_add(["000000000000000000000000000000"]), "1")
+
+p apply_bitmask(42)
+
+# "mask = 000000000000000000000000000000X1001X
+# mem[42] = 100
+# mask = 00000000000000000000000000000000X0XX
+# mem[26] = 1".each_line { |line| read_instruction(line) }
+
+# puts "the output hash is #{@memory_hash}"
 # input_file = "./day_14_input"
 #
 # File.read(input_file).each_line { |line| read_instruction(line) }
