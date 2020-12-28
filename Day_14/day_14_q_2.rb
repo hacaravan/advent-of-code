@@ -1,6 +1,9 @@
 # Given a list of instructions for (decimal) numbers to save in (decimal) memory locations
 # and bitmasks to change particular bits of a number, determine what the sum of all
-# the values stored in memory is
+# the values stored in memory is. However this time, the 'x' in the mask corresponds to
+# a floating bit, and the bit mask applies to the memory address, not the value to be stored.
+# The floating bit means that both 0 and 1 are used, so e.g. a mask like 0101xx would save to
+# memory locations with 010100, 010101, 010110 and 010111 binary representations
 
 
 # This method uses bitwise and/or ("|" and "&") which compare integers' binary representations
@@ -14,6 +17,11 @@
 def apply_bitmask(original_num, bitmask)
   original_num = original_num | bitmask.gsub("X", "0").to_i(2)
   original_num & bitmask.gsub("X", "1").to_i(2)
+end
+
+# Convert the x's to [0,1] arrays within an array of the elements
+def mask_to_arr(mask)
+  mask.chars.map { |char| char == "X" ? [0,1] : char.to_i}
 end
 
 def change_mask(new_mask)
@@ -33,10 +41,12 @@ end
 
 @mask, @memory_hash = "", {}
 
-input_file = "./day_14_input"
+p mask_to_arr("000000000000000000000000000000X1001X")
 
-File.read(input_file).each_line { |line| read_instruction(line) }
-
-value_sum = @memory_hash.values.reduce(0, :+)
-
-puts "The sum of all stored values is #{value_sum}, or in binary #{value_sum.to_s(2)}"
+# input_file = "./day_14_input"
+#
+# File.read(input_file).each_line { |line| read_instruction(line) }
+#
+# value_sum = @memory_hash.values.reduce(0, :+)
+#
+# puts "The sum of all stored values is #{value_sum}, or in binary #{value_sum.to_s(2)}"
